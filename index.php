@@ -6,7 +6,7 @@
 </head>
 <body>
   <h1>Envoyer une notification</h1>
-  <input type="text" id="message" placeholder="Votre message ici">
+  <input type="text" id="message" placeholder="Votre message ici" autofocus>
   <select id="device">
     <?php
     $token = 'o.05jBdESaPhkT3JKaUfHDyvzq3XSK3zjq';
@@ -56,6 +56,9 @@
       .then(data => {
         if (data.success) {
           document.getElementById('status').textContent = '✅ Notification envoyée !';
+          setTimeout(() => {
+            document.getElementById('status').textContent = '';
+          }, 3000);
           document.getElementById('message').value = '';
         } else {
           document.getElementById('status').textContent = '❌ Erreur : ' + data.error;
