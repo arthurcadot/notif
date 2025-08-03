@@ -10,7 +10,7 @@
     <input type="text" id="message" placeholder="Votre message ici" autofocus>
     <select id="device">
       <?php
-      $token = 'o.IuroXD5QHaBx4bMrvvBQgYsTd9pBVzCJ';
+      $token = 'o.4hF53Zz8BhFJRMgU6hpwAmk4JR8T9840';
       $ch = curl_init('https://api.pushbullet.com/v2/devices');
       curl_setopt($ch, CURLOPT_HTTPHEADER, ['Access-Token: ' . $token]);
       curl_setopt($ch, CURLOPT_RETURNTRANSFER, true);
@@ -43,9 +43,9 @@
       }
 
       const payload = {
-        titre: 'Notification personnalisée',
+        titre: 'KDO',
         text: message,
-        iden: device
+        channel_tag: 'kdo'
       };
 
       fetch('api.php', {

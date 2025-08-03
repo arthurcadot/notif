@@ -17,7 +17,6 @@ if (!isset($input['titre'], $input['text'], $input['iden'])) {
 
 $titre = trim($input['titre']);
 $text = trim($input['text']);
-$iden = trim($input['iden']);
 
 if ($titre === '' || $text === '' || $iden === '') {
     http_response_code(400);
@@ -25,13 +24,14 @@ if ($titre === '' || $text === '' || $iden === '') {
     exit;
 }
 
-$token = 'o.IuroXD5QHaBx4bMrvvBQgYsTd9pBVzCJ'; // Ton token
+$token = 'o.4hF53Zz8BhFJRMgU6hpwAmk4JR8T9840'; // Ton token
 
 $data = [
     'type' => 'note',
     'title' => $titre,
     'body' => $text,
-    'device_iden' => $iden
+    'device_iden' => $input['iden'] ?? null,
+    'channel_tag' => $input['channel_tag'] ?? null
 ];
 
 $ch = curl_init('https://api.pushbullet.com/v2/pushes');
