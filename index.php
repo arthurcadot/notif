@@ -1,59 +1,70 @@
-<?php
-header('Content-Type: application/json');
-header('Access-Control-Allow-Origin: *');
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+  <meta charset="UTF-8">
+  <title>Notification Push</title>
+</head>
+<body>
+  <h1>Envoyer une notification</h1>
+  <input type="text" id="message" placeholder="Votre message ici">
+  <select id="device">
+    <?php
+    $token = 'o.05jBdESaPhkT3JKaUfHDyvzq3XSK3zjq';
+    $ch = curl_init('https://api.pushbullet.com/v2/devices');
+    curl_setopt($ch, CURLOPT_HTTPHEADER, ['Access-Token: ' . $token]);
+    curl_setopt($ch, CURLOPT_RETURNTRANSFER, true);
+    $response = curl_exec($ch);
+    curl_close($ch);
+    $data = json_decode($response, true);
+    if (!isset($data['devices'])) {
+        echo '<option disabled>Erreur : impossible de récupérer les appareils.</option>';
+    } else {
+        foreach ($data['devices'] as $device) {
+            if (!$device['active']) continue;
+            $name = htmlspecialchars($device['nickname'] ?? 'Sans nom');
+            $iden = htmlspecialchars($device['iden']);
+            echo "<option value=\"$iden\">$name</option>";
+        }
+    }
+    ?>
+  </select>
 
-if ($_SERVER['REQUEST_METHOD'] !== 'POST') {
-    http_response_code(405);
-    echo json_encode(['success' => false, 'error' => 'Méthode non autorisée']);
-    exit;
-}
+  <button onclick="envoyerNotification()">Envoyer</button>
+  <p id="status"></p>
 
-$input = json_decode(file_get_contents('php://input'), true);
+  <script>
+    function envoyerNotification() {
+      const message = document.getElementById('message').value.trim();
+      const device = document.getElementById('device').value;
+      if (!message) {
+        document.getElementById('status').textContent = 'Veuillez saisir un message.';
+        return;
+      }
 
-if (!isset($input['titre'], $input['text'], $input['iden'])) {
-    http_response_code(400);
-    echo json_encode(['success' => false, 'error' => 'Champs manquants']);
-    exit;
-}
+      const payload = {
+        titre: 'Notification personnalisée',
+        text: message,
+        iden: device
+      };
 
-$titre = trim($input['titre']);
-$text = trim($input['text']);
-$iden = trim($input['iden']);
-
-if ($titre === '' || $text === '' || $iden === '') {
-    http_response_code(400);
-    echo json_encode(['success' => false, 'error' => 'Champs vides']);
-    exit;
-}
-
-$token = 'o.05jBdESaPhkT3JKaUfHDyvzq3XSK3zjq'; // Ton token
-
-$data = [
-    'type' => 'note',
-    'title' => $titre,
-    'body' => $text,
-    'device_iden' => $iden
-];
-
-$ch = curl_init('https://api.pushbullet.com/v2/pushes');
-curl_setopt($ch, CURLOPT_HTTPHEADER, [
-    'Access-Token: ' . $token,
-    'Content-Type: application/json'
-]);
-curl_setopt($ch, CURLOPT_POSTFIELDS, json_encode($data));
-curl_setopt($ch, CURLOPT_RETURNTRANSFER, true);
-
-$response = curl_exec($ch);
-$httpCode = curl_getinfo($ch, CURLINFO_HTTP_CODE);
-curl_close($ch);
-
-if ($httpCode === 200) {
-    echo json_encode(['success' => true, 'message' => 'Notification envoyée']);
-} else {
-    echo json_encode([
-        'success' => false,
-        'error' => 'Erreur API Pushbullet',
-        'http_code' => $httpCode,
-        'details' => json_decode($response, true)
-    ]);
-}
+      fetch('index.php', {
+        method: 'POST',
+        headers: {'Content-Type': 'application/json'},
+        body: JSON.stringify(payload)
+      })
+      .then(response => response.json())
+      .then(data => {
+        if (data.success) {
+          document.getElementById('status').textContent = '✅ Notification envoyée !';
+          document.getElementById('message').value = '';
+        } else {
+          document.getElementById('status').textContent = '❌ Erreur : ' + data.error;
+        }
+      })
+      .catch(error => {
+        document.getElementById('status').textContent = '⚠️ Erreur réseau : ' + error;
+      });
+    }
+  </script>
+</body>
+</html>
