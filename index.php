@@ -5,33 +5,34 @@
   <title>Notification Push</title>
 </head>
 <body>
-  <h1>Envoyer une notification</h1>
-  <input type="text" id="message" placeholder="Votre message ici" autofocus>
-  <select id="device">
-    <?php
-    $token = 'o.05jBdESaPhkT3JKaUfHDyvzq3XSK3zjq';
-    $ch = curl_init('https://api.pushbullet.com/v2/devices');
-    curl_setopt($ch, CURLOPT_HTTPHEADER, ['Access-Token: ' . $token]);
-    curl_setopt($ch, CURLOPT_RETURNTRANSFER, true);
-    $response = curl_exec($ch);
-    curl_close($ch);
-    $data = json_decode($response, true);
-    if (!isset($data['devices'])) {
-        echo '<option disabled>Erreur : impossible de récupérer les appareils.</option>';
-    } else {
-        foreach ($data['devices'] as $device) {
-            if (!$device['active']) continue;
-            $name = htmlspecialchars($device['nickname'] ?? 'Sans nom');
-            $iden = htmlspecialchars($device['iden']);
-            echo "<option value=\"$iden\">$name</option>";
-        }
-    }
-    ?>
-  </select>
+  <div style="position: absolute; top: 50%; left: 50%; transform: translate(-50%, -50%);">
+    <h1>Envoyer une notification</h1>
+    <input type="text" id="message" placeholder="Votre message ici" autofocus>
+    <select id="device">
+      <?php
+      $token = 'o.05jBdESaPhkT3JKaUfHDyvzq3XSK3zjq';
+      $ch = curl_init('https://api.pushbullet.com/v2/devices');
+      curl_setopt($ch, CURLOPT_HTTPHEADER, ['Access-Token: ' . $token]);
+      curl_setopt($ch, CURLOPT_RETURNTRANSFER, true);
+      $response = curl_exec($ch);
+      curl_close($ch);
+      $data = json_decode($response, true);
+      if (!isset($data['devices'])) {
+          echo '<option disabled>Erreur : impossible de récupérer les appareils.</option>';
+      } else {
+          foreach ($data['devices'] as $device) {
+              if (!$device['active']) continue;
+              $name = htmlspecialchars($device['nickname'] ?? 'Sans nom');
+              $iden = htmlspecialchars($device['iden']);
+              echo "<option value=\"$iden\">$name</option>";
+          }
+      }
+      ?>
+    </select>
 
-  <button onclick="envoyerNotification()">Envoyer</button>
-  <p id="status"></p>
-
+    <button onclick="envoyerNotification()">Envoyer</button>
+    <p id="status"></p>
+  </div>
   <script>
     function envoyerNotification() {
       const message = document.getElementById('message').value.trim();
