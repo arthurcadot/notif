@@ -10,7 +10,7 @@
     <input type="text" id="message" placeholder="Votre message ici" autofocus>
     <select id="device">
       <?php
-      $token = 'o.05jBdESaPhkT3JKaUfHDyvzq3XSK3zjq';
+      $token = 'o.IuroXD5QHaBx4bMrvvBQgYsTd9pBVzCJ';
       $ch = curl_init('https://api.pushbullet.com/v2/devices');
       curl_setopt($ch, CURLOPT_HTTPHEADER, ['Access-Token: ' . $token]);
       curl_setopt($ch, CURLOPT_RETURNTRANSFER, true);

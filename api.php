@@ -25,7 +25,7 @@ if ($titre === '' || $text === '' || $iden === '') {
     exit;
 }
 
-$token = 'o.05jBdESaPhkT3JKaUfHDyvzq3XSK3zjq'; // Ton token
+$token = 'o.IuroXD5QHaBx4bMrvvBQgYsTd9pBVzCJ'; // Ton token
 
 $data = [
     'type' => 'note',
